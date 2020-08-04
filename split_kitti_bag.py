@@ -23,7 +23,8 @@ if __name__ == '__main__':
     time will be t_orig / n + t_overlap
     """
 
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 4:            # print
+
         print("\nRequires 3 arguments")
         print("(1) Path to .bag file")
         print("(2) Number of robots")
@@ -64,15 +65,25 @@ if __name__ == '__main__':
 
         ros_time_end = rospy.Time.from_seconds(cur_section_start+section_length)
         for topic, msg, t in read_bag.read_messages(start_time=ros_time_start, end_time = ros_time_end):
-            new_topic = topic+"_%d"%(cur_section_id)
             t_offset = ros_time_start - rospy.Time.from_seconds(start_time)
             new_t = t - t_offset
-            write_bag.write(new_topic, msg, new_t)
 
-            print(new_t - rospy.Time.from_seconds(start_time))
-
+            # modify /tf messages so there are several tf trees
+            if(topic == '/tf'):
+                for tf in msg.transforms:
+                    # dont want to modify world frame
+                    if(tf.header.frame_id != 'world'):
+                        tf.header.frame_id = tf.header.frame_id + "_%d"%(cur_section_id)
+                    tf.child_frame_id = tf.child_frame_id + "_%d"%(cur_section_id)
+                # print(msg.transforms)
+            else:
+                topic = topic+"_%d"%(cur_section_id)
+                if (msg.header.frame_id != 'world'):
+                    msg.header.frame_id = msg.header.frame_id + "_%d"%(cur_section_id)
+            write_bag.write(topic, msg, new_t)
         cur_section_start += split_length
         cur_section_id += 1
+
     write_bag.close()
     print("Done splitting rosbag")
 
