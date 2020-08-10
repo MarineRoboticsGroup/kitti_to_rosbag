@@ -13,6 +13,8 @@ if __name__ == '__main__':
     - 'n' number of robots
     - 't_overlap' amount of overlap between robots that are adjacent in time
 
+    python split_kitti_bag.py /home/alan/kitti_dataset/residential/2011_09_30/2011_09_30_drive_0018_sync/kitti_0018.bag 4 10
+
     This file is intended to split single KITTI rosbags
     into a format suitable for multi-robot testing. The
     rosbag will be split such that it will be of shorter
@@ -74,7 +76,6 @@ if __name__ == '__main__':
                     if(tf.header.frame_id != 'world'):
                         tf.header.frame_id = tf.header.frame_id + "_%d"%(cur_section_id)
                     tf.child_frame_id = tf.child_frame_id + "_%d"%(cur_section_id)
-                # print(msg.transforms)
             else:
                 if topic == 'transform_imu':
                     msg.child_frame_id = "imu_%d"%(cur_section_id)
@@ -86,5 +87,6 @@ if __name__ == '__main__':
         cur_section_id += 1
 
     write_bag.close()
+    read_bag.close()
     print("Done splitting rosbag")
 
