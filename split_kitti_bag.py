@@ -67,7 +67,6 @@ if __name__ == '__main__':
         for topic, msg, t in read_bag.read_messages(start_time=ros_time_start, end_time = ros_time_end):
             t_offset = ros_time_start - rospy.Time.from_seconds(start_time)
             new_t = t - t_offset
-
             # modify /tf messages so there are several tf trees
             if(topic == '/tf'):
                 for tf in msg.transforms:
@@ -77,6 +76,8 @@ if __name__ == '__main__':
                     tf.child_frame_id = tf.child_frame_id + "_%d"%(cur_section_id)
                 # print(msg.transforms)
             else:
+                if topic == 'transform_imu':
+                    msg.child_frame_id = "imu_%d"%(cur_section_id)
                 topic = topic+"_%d"%(cur_section_id)
                 if (msg.header.frame_id != 'world'):
                     msg.header.frame_id = msg.header.frame_id + "_%d"%(cur_section_id)
