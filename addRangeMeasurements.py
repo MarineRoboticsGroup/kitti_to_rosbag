@@ -14,10 +14,11 @@ if __name__ == '__main__':
     inputs
     - nbRobots
     
-    python addNoiseMeasurements.py 4
+    python addRangeMeasurements.py 4
 
     This file is intended to add range measurements to an already split 
     KITTY bag 
+
     """
 
     if len(sys.argv) != 2:            # print
@@ -51,7 +52,7 @@ if __name__ == '__main__':
                     msg = sensor_msgs.msg.Range()
                     head =  Header()
                     head.stamp = rospy.Time.now()
-                    head.frame_id = "imu"+str(i)
+                    head.frame_id = "imu_"+str(i)
                     msg.header = head
                     msg.radiation_type = j
                     msg.min_range = MIN_RANGE
